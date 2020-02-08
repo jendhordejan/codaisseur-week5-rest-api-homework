@@ -10,6 +10,13 @@ router.get("/", (request, response, next) => {
     .catch(error => next(error));
 });
 
+//- _create_ a new movie resource
+router.post("/", (request, response, next) => {
+  Movie.create(request.body)
+    .then(movie => response.json(movie))
+    .catch(error => next(error));
+});
+
 //- _read_ a single movie resource
 router.get("/:id", (request, response, next) => {
   const movieId = parseInt(request.params.id);
@@ -31,7 +38,7 @@ router.put("/:id", (request, response, next) => {
       if (movie) {
         movie.update(request.body).then(task => response.json(task));
       } else {
-        response.status(404).end();
+        response.status(404).send("Movie not found");
       }
     })
     .catch(next);
@@ -46,19 +53,12 @@ router.delete("/:id", (request, response, next) => {
   })
     .then(numDeleted => {
       if (numDeleted) {
-        response.status(204).end();
+        response.status(204).send("Movie deleted");
       } else {
-        response.status(404).end();
+        response.status(404).send("Movie you want to delete is not found");
       }
     })
     .catch(next);
-});
-
-//- _create_ a new movie resource
-router.post("/", (request, response, next) => {
-  Movie.create(request.body)
-    .then(movie => response.json(movie))
-    .catch(error => next(error));
 });
 
 module.exports = router;
