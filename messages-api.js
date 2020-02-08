@@ -1,25 +1,25 @@
-/*
-1. Add a single endpoint to the app responds to `POST` requests to the `/messages` URI.
-1. When a request is sent to the endpoint, it should log the `text` property of the body to the console, and it should respond with a JSON object, for example:
-​
-   ```javascript
-   {
-      "message": "This is the message that was sent"
-   }
-   ```
-​
-   In order to parse the JSON body of the request, you will need to add the middleware for it.
-Make sure you add the required dependency.
-*/
-
 const express = require("express");
 const app = express();
 const port = 3000;
 const bodyParser = require("body-parser");
 
+let msg_ctr = 0;
+
+const msglimitMiddleware = (request, response, next) => {
+  if (msg_ctr < 5) {
+    request.body.message
+      ? response.send(request.body)
+      : response.status(400).end();
+    msg_ctr = msg_ctr + 1;
+  } else {
+    response.status(429).end();
+  }
+  next();
+};
+
 app.use(bodyParser.json());
-app.post("/messages", (request, response) => {
-  response.send(request.body);
-});
+
+//test: http localhost:3000/messages message='If I hate arrays, does that make me array-ist?'
+app.post("/messages", msglimitMiddleware, (request, response) => {});
 
 app.listen(port, () => console.log(`App started in port: ${port}`));
