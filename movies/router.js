@@ -5,7 +5,9 @@ const router = new Router();
 
 //- _read all_ movies (the collections resource)
 router.get("/", (request, response, next) => {
-  Movie.findAll()
+  const limit = request.query.limit || 2;
+  const offset = request.query.offset || 0;
+  Movie.findAll({ limit, offset })
     .then(movie => response.json(movie))
     .catch(error => next(error));
 });
