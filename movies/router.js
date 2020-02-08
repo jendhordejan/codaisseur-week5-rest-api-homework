@@ -5,10 +5,10 @@ const router = new Router();
 
 //- _read all_ movies (the collections resource)
 router.get("/", (request, response, next) => {
-  const limit = request.query.limit || 2;
+  const limit = Math.min(request.query.limit || 25, 500);
   const offset = request.query.offset || 0;
-  Movie.findAll({ limit, offset })
-    .then(movie => response.json(movie))
+  Movie.findAndCountAll({ limit, offset })
+    .then(result => response.json({ movies: result.rows, total: result.count }))
     .catch(error => next(error));
 });
 
